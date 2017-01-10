@@ -1,7 +1,311 @@
 
-"use strict";
+function ScrollBar(selector)
+{
+    var content = document.getElementById(selector.content);
+    var scrollAndContent = document.getElementById(selector.scrollAndContent);
+    var scroll = document.getElementById(selector.scroll);
+    var slider =  document.getElementById(selector.slider);
+    
+    var sliderPosTop = 0;
+    var contentPosTop = 0;
+    var draging = false;
+    var inRange = false;
+    var animationId = 0;
+    
+    var cssStyle = {
+            scroll:{
+            background: 'rgba(200,200,200,0.8)',
+            "border-radius": '15px',
+            width: '7px',
+            height: getHeight(scrollAndContent) + "px",
+            maxHeight: '100%',
+            position:'absolute',
+            right:'0px',
+            top:'0px'
+        }, slider:{
+            position:'absolute',
+            width:'7px',
+            background:'#555',
+            right:'0px',
+            "border-radius":'15px',
+            height: sliderHeight() + 'px'
+        }}
+    
 
-function drag(selector) {
+    setCss(scroll , cssStyle.scroll);
+    setCss(slider , cssStyle.slider);    
+    
+    windowSizeChange();
+    childChange();
+    touchEvent();
+    dragEvent();
+    wheelEvent();
+    
+    function getHeight(element)
+    {
+        var style = window.getComputedStyle(element);
+        var height = style.getPropertyValue("height");
+        height = height.match(/[-0-9]+/);
+        return parseInt(height);
+    }
+    
+    function setCss(element , css)
+    {
+          var elementCss = element.getAttribute("style");
+          var oldCss , newCss = {};
+          if(elementCss!=null)
+          {
+            oldCss = elementCss.split(";");
+            for(var i=0;i<oldCss.length-1;i++)
+            {           
+                oldCss[i] = oldCss[i].trim();
+                var a = oldCss[i].replace(":" ,"\":\"");
+                a = "{\""+ a +"\"}";
+                var b = JSON.parse(a);
+                for(var key in b)
+                {
+                    newCss[key] = b[key];
+                }
+            }
+          }
+            var cssString = "";
+            for (var name in css)
+            {
+               newCss[name] =  css[name];
+            }
+            for (var name in newCss)
+            {
+               cssString = cssString  + name + ":" + newCss[name]+";";
+            }
+            element.setAttribute("style",  cssString);
+    }
+    function sliderHeight()
+    {
+        var contentHeight = getHeight(content);
+        var scroll = getHeight(scrollAndContent);
+        return parseInt((scroll/contentHeight)*scroll);
+    }
+    function contentTopAndSliderTopChange(topValue)
+    {
+        setCss(content , {top:topValue + "px"});
+        setCss(slider , {top: -getHeight(scroll)*topValue/getHeight(content) + "px"});
+    }
+    function contentTopAndSliderTopAnimation(state , newContentPosTop)
+    {
+        animationId = window.requestAnimationFrame(animation);
+        var move = (newContentPosTop- contentPosTop)/20;
+        function animation()
+        {
+            if(state > 0)
+            {
+                contentPosTop = contentPosTop + move;
+
+                if(contentPosTop >= newContentPosTop)
+                {
+                   contentTopAndSliderTopChange(newContentPosTop);   
+                   animationId = window.cancelAnimationFrame(animationId);
+                }
+                else{
+                    contentTopAndSliderTopChange(contentPosTop);
+                    animationId = window.requestAnimationFrame(animation);
+                }
+            }
+            else if(state < 0)
+            {
+                contentPosTop += move;
+
+                if(contentPosTop <= newContentPosTop)
+                {
+                   contentTopAndSliderTopChange(newContentPosTop);  
+                   animationId = window.cancelAnimationFrame(animationId);
+                }
+                else{
+                    contentTopAndSliderTopChange(contentPosTop);
+                    animationId = window.requestAnimationFrame(animation);
+                }
+            }
+        }
+    }
+    function limit(value , min , max)
+    {
+        if(value < min)
+           value = min;
+       if(value > max)
+           value = max;
+       return value;
+    }
+    function selectProhibit(prohibit)
+    {
+        if(prohibit == true)
+        {
+            document.onselectstart = function() { return false; };
+            document.body.style.MozUserSelect = 'none';
+        }
+        else if(prohibit == false)
+        {
+            document.onselectstart = null;
+            document.body.style.MozUserSelect = '';
+        }
+    }
+    function showState(state)
+    {
+        if(state == 0)
+        {
+            scroll.style.visibility = "hidden";
+            slider.style.visibility = "hidden";
+        }
+        else
+        {
+            scroll.style.visibility = "visible";
+            slider.style.visibility = "visible"; 
+        }
+    }
+    function windowSizeChange()
+    {
+        window.addEventListener("resize" , function(){
+
+            setCss(slider , {height:sliderHeight() + "px"});
+            setCss(scroll , {height: getHeight(scrollAndContent) + "px"})
+             contentTopAndSliderTopChange(contentPosTop);
+             if (getHeight(content) <= getHeight(scrollAndContent))
+             {
+                 contentTopAndSliderTopChange(0);
+                 showState(0);
+             }else
+             {
+                 showState(1);
+             }
+        });
+        
+
+    }
+    function childChange()
+    {
+        var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+        var MutationObserverConfig = {
+            childList: true,
+            subtree: true,
+            characterData: true
+        };
+        var observer = new MutationObserver(function (mutations) {
+            
+            setCss(slider , {height:sliderHeight() + "px"});
+            contentTopAndSliderTopChange(contentPosTop);
+            
+            if (getHeight(content) <= getHeight(scrollAndContent))
+            {
+                contentTopAndSliderTopChange(0);
+                showState(0);
+            }else
+            {
+                showState(1);
+            }
+        });
+        observer.observe(content, MutationObserverConfig);
+    }
+    
+    function touchEvent()
+    {
+        var touchScreen = scrollAndContent;
+        var startY = 0;
+        var changeY = 0 , oldChangeY = 0;
+        
+       var touchStartEvent = function(event) {
+            event.preventDefault();
+            var touch = event.touches[0];
+            startY = touch.pageY;
+
+        }
+        var touchMoveEvent = function(event)
+        {
+            event.preventDefault();
+            var touch = event.touches[0];
+            changeY = touch.pageY - startY;
+            contentPosTop = contentPosTop + changeY - oldChangeY;
+            oldChangeY = changeY;
+  
+            contentPosTop = limit(contentPosTop , getHeight(scrollAndContent) - getHeight(content) , 0);   
+            contentTopAndSliderTopChange(contentPosTop);
+        }
+        var touchEndEvent = function(event) {
+            event.preventDefault();
+            startY = changeY = oldChangeY = 0;
+        }
+        
+        touchScreen.addEventListener("touchstart", touchStartEvent, false);
+        touchScreen.addEventListener("touchmove", touchMoveEvent, false);
+        touchScreen.addEventListener("touchend", touchEndEvent, false);
+    }
+    function dragEvent()
+    {
+        var drag = new Drag(slider);
+
+        drag.Draggable.create({axis: "y"
+            ,start:function(ui)
+            {                
+                selectProhibit(true);
+            }
+            ,drag: function (ui)
+            {       
+
+                if (ui.top() <= 0)
+                {
+                    ui.top(0);
+                }
+                if (ui.top() + getHeight(slider) > getHeight(scroll))
+                {
+                    ui.top(getHeight(scroll) - getHeight(slider));
+                }
+                contentPosTop = -ui.top() * getHeight(content) / getHeight(scroll);
+
+                setCss(content , {top: contentPosTop + "px"});
+               // now_slider.show();
+                draging = true;
+                
+            }
+            , end: function () {
+                draging = false;
+                /*if (leave)
+                {
+                    now_slider.hide('fast');
+                    now_scroll.hide('fast');
+                }*/
+                selectProhibit(false);
+            }
+        });
+    }
+    function wheelEvent()
+    {       
+        scrollAndContent.addEventListener('wheel', function (e) {
+
+
+            if (getHeight(scrollAndContent) < getHeight(content))
+            {
+                var newContentPosTop = contentPosTop
+                        ,newSliderPosTop = sliderPosTop
+                            ,state = 0;
+                if (e.deltaY < 0)
+                {
+                    newContentPosTop = newContentPosTop + (newContentPosTop + 200 > 0 ? -newContentPosTop : 200);
+                    state = 1;
+                } else
+                {
+                    newContentPosTop = newContentPosTop - 200;
+                    newContentPosTop = Math.max(newContentPosTop, -getHeight(content) + getHeight(scrollAndContent));
+                    state = -1;
+                }
+                
+                contentTopAndSliderTopAnimation(state , newContentPosTop);                      
+                return false;
+            }
+        });
+    }
+}
+ScrollBar.prototype.setScrollTop = function(top)
+{
+    
+};
+function Drag(element) {
 
     (function (Draggable) {
 
@@ -10,8 +314,8 @@ function drag(selector) {
         var moving = false;
         var start_x = 0, start_y = 0;
 
-        var element = document.querySelector(selector);
-        
+        var style = window.getComputedStyle(element);
+       
         var features = {
             start: function (ui) {},
             drag: function (ui) {},
@@ -19,31 +323,33 @@ function drag(selector) {
             axis: "s"
         };
 
-        var style = window.getComputedStyle(element);
-
         var ui = {
-            top: function (val) {
-
+            regex: /[-0-9]*/ 
+            
+            ,regexValue:function(value)
+            {
+                value = value.match(ui.regex);
+                if(value == "")
+                    return 0;
+                return parseInt(value);
+            }
+            ,top: function (val) {
+                
+                
                 if (val === undefined)
                 {
-                    var t = style.getPropertyValue('top').toString();
-                   if(t=="auto")
-                       t = "0px";
-                    return parseInt(t.substring(0, t.length - 2));
+                    var t = style.getPropertyValue('top').toString();                   
+                    return  ui.regexValue(t);
                 }
-
                 element.style.top = val + "px";
-            },
-            left: function (val) {
+            }
+            ,left: function (val) {
+                
                 if (val === undefined)
                 {
-                    var t = style.getPropertyValue('left').toString();
-                    if(t=="auto")
-                       t = "0px";
-                    return parseInt(t.substring(0, t.length - 2));
-                    
+                    var t = style.getPropertyValue('left').toString();                 
+                    return  ui.regexValue(t);                   
                 }
-
                 element.style.left = val + "px";
             }
         };
@@ -112,243 +418,3 @@ function drag(selector) {
         }
     }(this.Draggable = {}))
 };
-
-
-(function ($) {
-
-    var scroll_id = 0;
-
-    $.fn.scrollBar = function () {
-
-        scroll_id++; 
-        
-        
-        var methods = {
-                scrollTosliderTop : function()
-                {
-                    return height_scroll * scroll / height_all;
-                }
-                ,scrollAnimate:function()
-                {
-                     now.animate({top: scroll}, {
-                        easing: 'linear',
-                        duration: 'fast',
-                        queue: false
-                    });
-
-                    now_slider.animate({top: -slider_top}, {
-                        easing: 'linear',
-                        duration: 'fast',
-                        queue: false
-                    });
-                }
-                ,limit : function(value , min , max)
-                {
-                    if(value < min)
-                       value = min;
-                   if(value > max)
-                       value = max;
-                   return value;
-                }
-                ,selectProhibit:function(prohibit)
-                {
-                    if(prohibit == true)
-                    {
-                        document.onselectstart = function() { return false; };
-                        document.body.style.MozUserSelect = 'none';
-                    }
-                    else if(prohibit == false)
-                    {
-                        document.onselectstart = null;
-                        document.body.style.MozUserSelect = '';
-                    }
-                }
-                
-        };
-        var newContentId = "scrollBar-all-" + scroll_id
-                , newContentClass = "scrollBar-all-class";
-
-        var scrollBarObj = document.querySelector($(this).selector);
-        var parent = scrollBarObj.parentNode;
-        var newContent = document.createElement("div");
-
-        newContent.id = newContentId;
-        newContent.class = newContentClass;
-
-        parent.replaceChild(newContent, scrollBarObj);
-        newContent.appendChild(scrollBarObj);
-
-        var allcontentname = "#" + newContentId;
-
-        $(allcontentname).append("<div id=scroll-" + scroll_id + "><div id=slider-" + scroll_id + "></div></div>");
-
-        var scroll = 0
-            , now = $(this)
-            , now_obj = $(allcontentname)
-            , now_scroll = $('#scroll-' + scroll_id)
-            , now_slider = $('#slider-' + scroll_id)
-            , slider_top = 0
-            , draging = false
-            , leave = true
-            , last_obj_height = height_all;
-
-        now_obj.css({
-            position: 'relative',
-            overflow: 'hidden',
-        });
-
-        var height_all = now.height()
-                , height_scroll = now_obj.height();
-
-        now_scroll.css({
-            background: 'rgba(200,200,200,0.8)',
-            borderRadius: '15px',
-            width: '7px',
-            height: now_obj.height(),
-            maxHeight: '100%',
-            position: 'absolute',
-            right: '0px',
-            top: '0px'
-        });
-
-        now_slider.css({
-            position: 'absolute',
-            width: '7px',
-            background: '#555',
-            right: '0px',
-            borderRadius: '15px',
-            height: (height_scroll / height_all) * height_scroll + 'px'
-        });
-
-        now_slider.hide();
-        now_scroll.hide();
-
-        var obj = document.querySelector(allcontentname);
-        var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
-
-        var MutationObserverConfig = {
-            childList: true,
-            subtree: true,
-            characterData: true
-        };
-
-        var observer = new MutationObserver(function (mutations) {
-            height_all = now.height();
-            now_slider.css('height', ((height_scroll / height_all) * height_scroll) + 'px');
-
-            if (now_slider.height() >= now_obj.height())
-            {
-                now_slider.hide();
-                slider_top = scroll = 0;
-                now_obj.css({top: scroll});
-                now_slider.css({top: -slider_top});
-            }
-        });
-
-        observer.observe(obj, MutationObserverConfig);
-
-        var d = new drag(now_slider.selector);
-
-        d.Draggable.create({axis: "y"
-            ,start:function(ui)
-            {                
-                methods.selectProhibit(true);
-            }
-            ,drag: function (ui)
-            {                
-                if (ui.top() < 0)
-                {
-                    ui.top(0);
-                }
-                if (ui.top() + now_slider.height() > now_scroll.height())
-                {
-                    ui.top(now_scroll.height() - now_slider.height());
-                }
-                scroll = -ui.top() * height_all / height_scroll;
-
-                now.css({top: scroll});
-                now_slider.show();
-                draging = true;
-                
-            }
-            , end: function () {
-                draging = false;
-                if (leave)
-                {
-                    now_slider.hide('fast');
-                    now_scroll.hide('fast');
-                }
-                methods.selectProhibit(false);
-            }
-        });
-
-        var touchScreen = document.querySelector(allcontentname);
-        var startY = 0;
-        var changeY = 0 , oldChangeY = 0;
-
-        touchScreen.addEventListener("touchstart", touchStartEvent, false);
-        touchScreen.addEventListener("touchmove", touchMoveEvent, false);
-        touchScreen.addEventListener("touchend", touchEndEvent, false);
-
-        function touchStartEvent(event) {
-            event.preventDefault();
-            var touch = event.touches[0];
-            startY = touch.pageY;
-        }
-        function touchMoveEvent(event)
-        {
-            event.preventDefault();
-            var touch = event.touches[0];
-            changeY = touch.pageY - startY;
-            scroll = scroll + changeY - oldChangeY;
-            oldChangeY = changeY;
-
-            scroll = methods.limit(scroll , 0 , now_obj.height()-height_all);
-            
-            slider_top = methods.scrollTosliderTop();
-
-            now.css({top: scroll});
-            now_slider.css({top: -slider_top});
-        }
-        function touchEndEvent(event) {
-            event.preventDefault();
-            startY = changeY = oldChangeY = 0;
-        }
-
-        now_obj.on('wheel', function (e) {
-
-            if (height_scroll < height_all)
-            {
-                if (e.originalEvent.deltaY < 0)
-                {
-                    scroll = scroll + (scroll + 200 > 0 ? -scroll : 200);
-                } else
-                {
-                    scroll = scroll - 200;
-                    scroll = Math.max(scroll, -height_all + now_obj.height());
-                }
-
-                slider_top = methods.scrollTosliderTop();
-                methods.scrollAnimate();                            
-                return false;
-            }
-        });
-        $(allcontentname).hover(function () {
-            if (!(height_scroll > height_all))
-            {
-                now_slider.show('fast');
-                now_scroll.show('fast');
-            }
-            leave = false;
-        }
-        ,function () {
-            if (!draging)
-            {
-                now_slider.hide('fast');
-                now_scroll.hide('fast');
-            }
-            leave = true;
-        });
-    };
-})(jQuery);
-

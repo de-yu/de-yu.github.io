@@ -58,9 +58,11 @@
 }
 #one-all
 {
+    position: relative;
        width:350px;
-
        margin:0 auto;
+        height:400px;
+       overflow: hidden;
 }
 #one
 {
@@ -88,10 +90,13 @@
      width:100%;
      height:50px;
  }
- #scrollBar-all-2
+#two-2-all
  {
-    width:100%;
-    height:300px;
+    position: relative;
+       width:350px;
+       margin:0 auto;
+        height:300px;
+       overflow: hidden;
  }
  #two-2
  {   position: relative;  
@@ -112,15 +117,14 @@
     float:left;
     margin:0 auto;
 }
-#scrollBar-all-3
-{
-    width:100%;
-    height:350px;
-}
+
 #three-all
 {
+    position: relative;
        width:350px;
        margin:0 auto;
+        height:350px;
+       overflow: hidden;
 }
 #three
 {      
