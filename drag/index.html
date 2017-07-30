@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <style>
+        #animation
+        {
+            position:relative;
+            top:0px;
+            background: #333;
+            width:100px;
+            height:100px;
+            border:1px solid #000;
+        }
+
+        </style>
+    </head>
+
+    <body>
+        <div id="animation"></div>
+    </body>
+
+    <script src="jquery/jquery.js"></script>
+    <script src="library/cssValue.js"></script>
+    <script src="library/createElement.js"></script>
+    <script>
+        "use strict";
+function Drag(element) {
+
+    (function (Draggable) {
+
+        var x = 0 , y = 0;
+        var move_x = 0, move_y = 0;
+        var moving = false;
+        var start_x = 0, start_y = 0;
+
+        var style = window.getComputedStyle(element);
+       
+        var features = {
+            start: function (ui) {},
+            drag: function (ui) {},
+            end: function (ui) {},
+            axis: "s"
+        };
+
+        var ui = {
+            regex: /[-0-9]*/ 
+            
+            ,regexValue:function(value)
+            {
+                value = value.match(ui.regex);
+                if(value == "")
+                    return 0;
+                return parseInt(value);
+            }
+            ,top: function (val) {
+                
+                
+                if (val === undefined)
+                {
+                    var t = style.getPropertyValue('top').toString();                   
+                    return  ui.regexValue(t);
+                }
+                element.style.top = val + "px";
+            }
+            ,left: function (val) {
+                
+                if (val === undefined)
+                {
+                    var t = style.getPropertyValue('left').toString();                 
+                    return  ui.regexValue(t);                   
+                }
+                element.style.left = val + "px";
+            }
+        };
+
+        Draggable.create = function (func)
+        {
+            extend();
+
+            element.addEventListener("mousedown", function (event) {
+
+                x = event.clientX;
+                y = event.clientY;
+                start_x = ui.left();
+                start_y = ui.top();
+                moving = true;
+                features.start(ui);
+                console.log(x + " " +y);
+                console.log(start_x + " " + start_y);
+            });
+
+            element.addEventListener("mousemove", function (event) {
+                if (moving) {
+                    moveValue(event);
+                    move();
+                    features.drag(ui);
+                }
+            });
+            window.addEventListener("mousemove", function (event) {
+                if (moving) {
+                    moveValue(event);
+                    move();
+                    features.drag(ui);
+                }
+            });
+            element.addEventListener("mouseup", function (event) {
+                features.end(ui);
+                moving = false;
+            });
+            window.addEventListener("mouseup", function (event) {
+                features.end(ui);
+                moving = false;
+            });
+
+            function moveValue(event)
+            {
+
+
+                move_x = event.clientX - x + start_x;
+                move_y = event.clientY - y + start_y;
+            }
+
+            function move()
+            {
+                if(features.axis=="y" || features.axis=="s") 
+                   ui.top(move_y);
+                if(features.axis=="x" || features.axis=="s")
+                   ui.left(move_x);
+            }
+            function extend()
+            {
+                for (var key in func)
+                {
+                    features[key] = func[key];
+                }
+            }
+        }
+    }(this.Draggable = {}))
+};
+var ele = document.getElementById("animation");
+var a = new Drag(ele);
+
+a.Draggable.create();
+    </script>
+</html>
