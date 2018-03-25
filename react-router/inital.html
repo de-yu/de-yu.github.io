@@ -6,7 +6,7 @@ and open the template in the editor.
 -->
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>React-router inital</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
@@ -42,7 +42,6 @@ class Page extends React.Component
         <h1>Page</h1>
          </div>
         )};
-  
 }
 
 const Home = () => (
@@ -51,14 +50,14 @@ const Home = () => (
   </div>
 )
 const Main = () => (
-  <main>
+  <div>
     <Switch>
       <Route exact path='/' component={Home}/>
       <Route path='/page' component={Page}/>
       <Route path='/AboutMe' component={AboutMe}/>
 
     </Switch>
-  </main>
+  </div>
 )
 
 const Header = () => (
