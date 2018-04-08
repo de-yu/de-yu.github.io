@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>React-router inital</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div id="example"></div>
+    </body>
+    <script src = "https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/16.2.0/umd/react.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.2.0/umd/react-dom.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-router/4.2.0/react-router.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-router-dom/4.2.2/react-router-dom.min.js"></script>    
+    <script type="text/babel">
+        
+        
+ var BrowserRouter = ReactRouterDOM.BrowserRouter,
+         Route= ReactRouterDOM.Route , 
+         Link= ReactRouterDOM.Link , 
+         Switch= ReactRouterDOM.Switch;
+ 
+
+class Page extends React.Component 
+{
+    render(){return (
+        <div>
+        <h1>Page</h1>
+        <h1>{this.props.match.params.id}</h1>
+         </div>
+  )};
+  
+}
+var Page2 = function({match}){
+    return <h1>Hello {match.params.name}</h1>;
+}
+
+const Main = () => (
+  <div>
+    <Switch>
+       <Route path='/page/:id' component={Page}/>
+       <Route path='/page2/:name' component={Page2}/>
+    </Switch>
+  </div>
+)
+
+const Header = () => (
+  <header>
+    <nav>
+      <ul>
+         <li><Link to='/page/5'>Page</Link></li>
+         <li><Link to='/page2/3'>Page2</Link></li>
+      </ul>
+    </nav>
+  </header>
+)
+
+const App = () => (
+  <div>
+    <Header />
+    <Main />
+  </div>
+)
+
+ReactDOM.render((
+  <BrowserRouter basename="/react-router">
+    <App />
+  </BrowserRouter>
+), document.getElementById('example'))
+
+    </script>
+</html>
