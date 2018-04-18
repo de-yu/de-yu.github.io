@@ -1,0 +1,65 @@
+
+sklearn.preprocessing.PolynomialFeatures
+
+
+作用在產生新的 feature
+
+三個參數
+degree 調整梯度 default = 2
+interaction_only 預設 false  如果為 True 將不會有 x**2  x**3 等這類型的資料  
+include_bias 預設 True  如果為 False 將不會有第一項的 1
+
+
+[a , b] => 1 , a , b , a**2 , a*b , b**2
+
+
+code:
+
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import PolynomialFeatures
+
+data = [[2,5],[1,2]]
+
+# 回傳 [a , b] 1,a,b,a**2 , a*b , b**2
+
+poly = PolynomialFeatures(3)
+poly.fit(data)
+print("PolynomialFeatures powers_ :\n" , poly.powers_)
+print("PolynomialFeatures n_input_features_ :\n" , poly.n_input_features_)
+print("PolynomialFeatures n_output_features_ :\n" , poly.n_output_features_)
+
+print(poly.fit_transform(data))
+
+# interaction_only = True 將不會有 x**2 x**3 等這類型的資料 
+poly = PolynomialFeatures(2 , interaction_only = True)
+
+print(poly.fit_transform(data))
+
+# include_bias = False 將不會有第一項的 1
+poly = PolynomialFeatures(2 , include_bias = False)
+
+print(poly.fit_transform(data))
+
+output:
+
+PolynomialFeatures powers_ :
+ [[0 0]
+ [1 0]
+ [0 1]
+ [2 0]
+ [1 1]
+ [0 2]]
+PolynomialFeatures n_input_features_ :
+ 2
+PolynomialFeatures n_output_features_ :
+ 6
+[[ 1.  2.  5.  4. 10. 25.]
+ [ 1.  1.  2.  1.  2.  4.]]
+[[ 1.  2.  5. 10.]
+ [ 1.  1.  2.  2.]]
+[[ 2.  5.  4. 10. 25.]
+ [ 1.  2.  1.  2.  4.]]
+
+
+powers_ 代表兩數的次方數  並相乘為 feature 的值
