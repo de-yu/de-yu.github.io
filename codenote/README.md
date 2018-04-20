@@ -13,11 +13,11 @@ preprocessing.Imputer <br/>
 preprocessing.KernelCenterer <br/>
 preprocessing.MultiLabelBinarizer <br/>
 preprocessing.OneHotEncoder<br/>
-preprocessing.PolynomialFeatures <br/>
+preprocessing.PolynomialFeatures <br/> ok
 preprocessing.QuantileTransformer <br/>
 preprocessing.RobustScaler <br/>
-preprocessing.StandardScaler<br/>
-preprocessing.add_dummy_feature <br/>
-preprocessing.quantile_transform <br/>
+preprocessing.StandardScaler<br/> ok
+preprocessing.add_dummy_feature <br/>ok
+
 
   Nodejs request
