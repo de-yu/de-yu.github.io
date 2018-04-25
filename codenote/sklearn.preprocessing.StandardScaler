@@ -7,12 +7,51 @@ z score 計算方式  (x - x.mean) / x . std
 
 fit 完可取得3個屬性值
 
+scale_ 標準差
+mean_ 平均
+var_ 變異數
 
 公式
 
 $$x=\frac{x - \mu}{\sigma}$$
 
 code:
+import pandas as pd
+import numpy as np
 
+from sklearn.preprocessing import StandardScaler
 
+data = [[1,2,3],[8,5,6],[4,3,5]]
+
+scaler = StandardScaler()
+scaler.fit(data)
+
+#直的一組
+# (x - x.mean)/x.scale
+# scale 標準差
+# var_ 是變異數
+# 程式在計算 z-score
+# if with_std = False  每個數都減掉 平均值
+# if with_mean = False 每個數在計算時 不會減去平均值
+
+print("StandardScaler scale_ :\n" , scaler.scale_)
+print("StandardScaler mean_  :\n" , scaler.mean_ )
+print("StandardScaler var_  :\n" , scaler.var_ )
+print("StandardScaler n_samples_seen_  :\n" , scaler.n_samples_seen_ )
+
+print(scaler.fit_transform(data))
+
+output:
+
+StandardScaler scale_ :
+ [2.86744176 1.24721913 1.24721913]
+StandardScaler mean_  :
+ [4.33333333 3.33333333 4.66666667]
+StandardScaler var_  :
+ [8.22222222 1.55555556 1.55555556]
+StandardScaler n_samples_seen_  :
+ 3
+[[-1.16247639 -1.06904497 -1.33630621]
+ [ 1.27872403  1.33630621  1.06904497]
+ [-0.11624764 -0.26726124  0.26726124]]
 
