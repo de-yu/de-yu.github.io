@@ -13,7 +13,7 @@ preprocessing.MultiLabelBinarizer <br/>ok
 preprocessing.OneHotEncoder<br/>
 preprocessing.PolynomialFeatures <br/> ok
 preprocessing.QuantileTransformer <br/>
-preprocessing.RobustScaler <br/>
+preprocessing.RobustScaler <br/>ok
 preprocessing.StandardScaler<br/> ok
 preprocessing.add_dummy_feature <br/>ok
 

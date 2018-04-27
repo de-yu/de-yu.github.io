@@ -1,0 +1,126 @@
+
+使用四分位距標準化資料
+計算方式
+
+(每數 - 中位數) / 四分位距
+
+參數
+with_centering 為 true 設定 每數-中位數  false 回傳 每數 / scale
+with_scaling 為 true 會將 每數/ 四分位距  false 則不會除四分位距
+quantile_range 預設 (25.0 , 75.0) 計算四分位距 可按照需求調整
+
+scale 的計算方式如下
+
+0 1 3 5 6 8 9 10 15
+
+quantile_range(40 , 75)
+每一位數字 代表數列 12.5
+40 在 37.5 ~ 50  在 5~6 之間
+40距離5 -> 2.5 距離6->  10
+5較近權重較大
+
+\\(x = 5*\frac{10}{12.5} + 5*\frac{2.5}{12.5} = 5.2 \\)
+\\(scale = 9-5.2 = 3.8\\)
+
+code:
+
+import pandas as pd
+import numpy as np
+
+from sklearn.preprocessing import RobustScaler
+
+data = [[1 , 5],[2 , 9],[3 , 8],[4 , 3],[5 ,10],[6, 1],[7,6],[8,15],[9,0]]
+#1 2 3 4 5 6 7 8 9
+#0 1 3 5 6 8 9 10 15
+# center_ 中位數
+# scale_ 四分位距
+# with_centering 為 true 設定轉換的中位數為 0  false 回傳 每數 / scale
+# with_scaling 為 true 會將 每數/ 四分位距  false 
+#quantile_range 預設 (25.0 , 75.0) 計算四分位距 可按照需求調整
+
+scaler = RobustScaler()
+
+scaler.fit(data)
+
+print("RobustScaler center_: \n" , scaler.center_)
+print("RobustScaler scale_: \n" , scaler.scale_)
+print(scaler.fit_transform(data))
+
+scaler = RobustScaler(with_centering =False)
+
+scaler.fit(data)
+
+print("RobustScaler scale_: \n" , scaler.scale_)
+print(scaler.fit_transform(data))
+
+scaler = RobustScaler(with_scaling =False)
+
+scaler.fit(data)
+
+print("RobustScaler center_: \n" , scaler.center_)
+print(scaler.fit_transform(data))
+
+scaler = RobustScaler(quantile_range =(40,75))
+
+scaler.fit(data)
+
+print("RobustScaler center_: \n" , scaler.center_)
+print("RobustScaler scale_: \n" , scaler.scale_)
+print(scaler.fit_transform(data))
+
+output:
+
+RobustScaler center_: 
+ [5. 6.]
+RobustScaler scale_: 
+ [4. 6.]
+[[-1.         -0.16666667]
+ [-0.75        0.5       ]
+ [-0.5         0.33333333]
+ [-0.25       -0.5       ]
+ [ 0.          0.66666667]
+ [ 0.25       -0.83333333]
+ [ 0.5         0.        ]
+ [ 0.75        1.5       ]
+ [ 1.         -1.        ]]
+RobustScaler scale_: 
+ [4. 6.]
+[[0.25       0.83333333]
+ [0.5        1.5       ]
+ [0.75       1.33333333]
+ [1.         0.5       ]
+ [1.25       1.66666667]
+ [1.5        0.16666667]
+ [1.75       1.        ]
+ [2.         2.5       ]
+ [2.25       0.        ]]
+RobustScaler center_: 
+ [5. 6.]
+[[-4. -1.]
+ [-3.  3.]
+ [-2.  2.]
+ [-1. -3.]
+ [ 0.  4.]
+ [ 1. -5.]
+ [ 2.  0.]
+ [ 3.  9.]
+ [ 4. -6.]]
+RobustScaler center_: 
+ [5. 6.]
+RobustScaler scale_: 
+ [2.8 3.8]
+[[-1.42857143 -0.26315789]
+ [-1.07142857  0.78947368]
+ [-0.71428571  0.52631579]
+ [-0.35714286 -0.78947368]
+ [ 0.          1.05263158]
+ [ 0.35714286 -1.31578947]
+ [ 0.71428571  0.        ]
+ [ 1.07142857  2.36842105]
+ [ 1.42857143 -1.57894737]]
+
+
+
+
+
+
