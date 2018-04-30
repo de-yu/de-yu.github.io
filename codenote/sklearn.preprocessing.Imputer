@@ -1,0 +1,42 @@
+
+計算缺失值
+
+以三種策略來計算
+1. 平均值
+2. 中位數
+3. 眾數
+
+替換掉名為 NaN 的字串
+
+可以選擇 column 或 row 計算
+
+import pandas as pd
+import numpy as np
+
+from sklearn.preprocessing import Imputer
+
+data = [["NaN" , 2] , [5 , 6] , [4 , 8] , ["NaN" , 9] , [3,3] , [10,6]]
+
+# missing_values 要被替換的值 預設 "NaN"
+# strategy 替換策略 mean 平均值 median 中位數 most_frequent 眾數 
+# axis 預設 0  0=> 直的一組 1 => 橫的一組
+# verbose 作用不明
+# statistics_ 參數 代表要替換的數值為多少
+imp = Imputer()
+imp.fit(data)
+
+print("Imputer statistics_ :\n" , imp.statistics_)
+print(imp.transform(data))
+
+print(imp.fit_transform(data))
+
+imp = Imputer(strategy ="median")
+
+print(imp.fit_transform(data))
+
+
+data2 = [[1,2,"Nan",3,48]]
+
+imp = Imputer(strategy ="median" , axis = 1)
+
+print(imp.fit_transform(data2))
