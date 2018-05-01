@@ -1,11 +1,16 @@
 
 ㄏノだ禯夹非て戈
+
 璸衡よΑ
+
 
 (–计 - い计) / だ禯
 
+\\(\frac{x - x.median}{IQR}\\)
+
+ 
 把计
-with_centering  true 砞﹚ –计-い计  false 肚 –计 / scale
+with_centering  true 砞﹚ –计-い计  false 玥ぃ搭
 with_scaling  true 穦盢 –计/ だ禯  false 玥ぃ穦埃だ禯
 quantile_range 箇砞 (25.0 , 75.0) 璸衡だ禯 酚惠―秸俱
 
