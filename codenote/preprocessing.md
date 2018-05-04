@@ -1,54 +1,54 @@
 
 ## Binarizer
 
-    ¥H threshold ¬°°ò·Ç 
+    ä»¥ threshold ç‚ºåŸºæº– 
     > threshold = 1
     < threshold = 0
 
 
 ##LabelBinarizer
 
-    ±N¦r¦ê¬M®g¬°¼Æ¦r
-    ¼Æ¦r¬°¤G­È¤Æ
+    å°‡å­—ä¸²æ˜ å°„ç‚ºæ•¸å­—
+    æ•¸å­—ç‚ºäºŒå€¼åŒ–
 
 ##LabelEncoder
 
-    ±N¦r¦ê¬M®g¬°¼Æ¦r
-    ¼Æ¦r¬°±`¼Æ
+    å°‡å­—ä¸²æ˜ å°„ç‚ºæ•¸å­—
+    æ•¸å­—ç‚ºå¸¸æ•¸
 
 ##MaxAbsScaler
 
-    ¨C¼Æ°£¥H¨C¦æµ´¹ï­È¤¤ªº³Ì¤j­È
+    æ¯æ•¸é™¤ä»¥æ¯è¡Œçµ•å°å€¼ä¸­çš„æœ€å¤§å€¼
     x / abs(max(X))
 
 ##MinMaxScaler
 
-    ±N¨C¦æ³Ì¤pªº¼Æ³]¬°0 ³Ì¤j¬°1¨ä¾l¥H¤ñ¨Ò¶i¦æ­pºâ
-    ¼Ð·Ç¤Æ: 
+    å°‡æ¯è¡Œæœ€å°çš„æ•¸è¨­ç‚º0 æœ€å¤§ç‚º1å…¶é¤˜ä»¥æ¯”ä¾‹é€²è¡Œè¨ˆç®—
+    æ¨™æº–åŒ–: 
     X_std = (X - X.min) / (X.max - X.min)
-    µ²ªG:
+    çµæžœ:
     x = X_std * (X.max - X.min) + X.min
 
 ##MultiLabelBinarizer
   
-    ©M LabelBinarizer ¬Û¦ü
-    ®t§O¦b³o­Ó¥i¥H¤@¦¸¿é¤J¦h²Õ¸ê®Æ
+    å’Œ LabelBinarizer ç›¸ä¼¼
+    å·®åˆ¥åœ¨é€™å€‹å¯ä»¥ä¸€æ¬¡è¼¸å…¥å¤šçµ„è³‡æ–™
 
 ##Normalizer
 
 ##PolynomialFeatures
 
-    ²£¥Í·sªº¯S¼x
+    ç”¢ç”Ÿæ–°çš„ç‰¹å¾µ
 
 ##RobustScaler
 
-    ¼Ð·Ç¤Æ¼Æ¦r
-    ´î¥h¤¤¦ì¼Æ°£¥H¥|¤À¦ì¶Z
+    æ¨™æº–åŒ–æ•¸å­—
+    æ¸›åŽ»ä¸­ä½æ•¸é™¤ä»¥å››åˆ†ä½è·
 
 ##StandardScaler
   
 
 ##add_dummy_feature
     
-    ²K¥[·s¸ê®Æ
-    ²K¥[¦b²Ä¤@¦C
+    æ·»åŠ æ–°è³‡æ–™
+    æ·»åŠ åœ¨ç¬¬ä¸€åˆ—
