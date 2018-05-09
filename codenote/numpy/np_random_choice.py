@@ -1,6 +1,6 @@
 import numpy as np
 
-batch = np.random.choice(10000, 100)
+batch = np.random.choice(100, 10)
 
 print(batch)
 
