@@ -1,0 +1,9 @@
+
+'use babel';
+
+"electron main.js -r babel-register"
+
+ constructor (props)
+        {
+             super(props);
+}
