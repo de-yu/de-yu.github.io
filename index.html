@@ -4,15 +4,112 @@
     <head>
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-        <style>
-           
-        </style> 
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
-   
-    <body>
-   test
-    </body>
     
+    <body>
+        <div id="example">
+            
+        </div>
+         <script src = "https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/16.2.0/umd/react.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.2.0/umd/react-dom.development.js"></script>
+<script src ="https://cdnjs.cloudflare.com/ajax/libs/redux/4.0.0/redux.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-redux/5.0.6/react-redux.min.js"></script>
+    <script type="text/babel">
 
+var createStore = Redux.createStore;
+var bindActionCreators = Redux.bindActionCreators;
+const { Provider, connect } = ReactRedux;
+	
+const add = {type:'INCREMENT'};
+const  minus = {type:'DECREMENT'};
+
+
+class Counter extends React.Component {
+  constructor(props) {
+    super(props);
+    this.incrementAsync = this.incrementAsync.bind(this);
+    this.incrementIfOdd = this.incrementIfOdd.bind(this);
+/*
+    console.log(this.props);
+    console.log(this.props.value)
+    console.log(this.props.onIncrement());*/
+
+  }
+
+  incrementIfOdd() {
+    if (this.props.value % 2 !== 0) {
+      this.props.onIncrement()
+    }
+  }
+
+  incrementAsync() {
+    console.log(this.props.value);
+  }
+
+  render() {
+    const { value, onIncrement, onDecrement } = this.props
+    return (
+      <p>
+        Clicked: {value} times
+        {' '}
+        <button onClick={onIncrement}>
+          +
+        </button>
+        {' '}
+        <button onClick={onDecrement}>
+          -
+        </button>
+        {' '}
+        <button onClick={this.incrementIfOdd}>
+          Increment if odd
+        </button>
+        {' '}
+        <button onClick={this.incrementAsync}>
+          Increment async
+        </button>
+      </p>
+    )
+  }
+}
+ const reducer = (state = 0, action) => {
+  switch (action.type) {
+    case 'INCREMENT':
+      return state + 1
+    case 'DECREMENT':
+      return state - 1;
+    default:
+      return state;
+  }
+}
+
+const store = createStore(reducer)
+
+const mapStateToProps = state =>{
+    return {value:store.getState()};
+};
+
+const mapDispatchToProps = dispatch => {
+ return {
+    onIncrement:function(){dispatch(add)} ,
+    onDecrement:function(){dispatch(minus)}
+    };
+};
+
+Counter = connect(mapStateToProps ,mapDispatchToProps )(Counter);
+
+
+const rootEl = document.getElementById('example')
+
+ReactDOM.render(
+  <Provider store={store}>
+            <Counter />
+  </Provider>,
+  rootEl
+)
+
+
+    </script>
+    </body>
 </html>
