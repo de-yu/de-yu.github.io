@@ -5,7 +5,6 @@
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     </head>
     
     <body>
@@ -23,78 +22,53 @@ var createStore = Redux.createStore;
 var bindActionCreators = Redux.bindActionCreators;
 const { Provider, connect } = ReactRedux;
 	
-const add = {type:'INCREMENT'};
-const  minus = {type:'DECREMENT'};
+const add = function(add){return {type:'INCREMENT' , add}};
+const  minus = function(minus){return {type:'DECREMENT' , minus}};
 
 
 class Counter extends React.Component {
   constructor(props) {
     super(props);
-    this.incrementAsync = this.incrementAsync.bind(this);
-    this.incrementIfOdd = this.incrementIfOdd.bind(this);
-/*
-    console.log(this.props);
-    console.log(this.props.value)
-    console.log(this.props.onIncrement());*/
-
   }
-
-  incrementIfOdd() {
-    if (this.props.value % 2 !== 0) {
-      this.props.onIncrement()
-    }
-  }
-
-  incrementAsync() {
-    console.log(this.props.value);
-  }
-
   render() {
     const { value, onIncrement, onDecrement } = this.props
     return (
       <p>
-        Clicked: {value} times
-        {' '}
+        Clicked: {value.value} times
         <button onClick={onIncrement}>
           +
         </button>
-        {' '}
         <button onClick={onDecrement}>
           -
-        </button>
-        {' '}
-        <button onClick={this.incrementIfOdd}>
-          Increment if odd
-        </button>
-        {' '}
-        <button onClick={this.incrementAsync}>
-          Increment async
         </button>
       </p>
     )
   }
 }
- const reducer = (state = 0, action) => {
+ const reducer = (state={'value':0}, action) => {
+   console.log(state);
+   console.log(action);
   switch (action.type) {
     case 'INCREMENT':
-      return state + 1
+      return {'value':state['value']+1};
     case 'DECREMENT':
-      return state - 1;
+      return {'value':state['value']-1};
     default:
-      return state;
+      return {'value':state['value']};
   }
 }
 
 const store = createStore(reducer)
 
 const mapStateToProps = state =>{
-    return {value:store.getState()};
+    return {value:state};
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch , props) => {
+
  return {
-    onIncrement:function(){dispatch(add)} ,
-    onDecrement:function(){dispatch(minus)}
+    onIncrement:function(){   console.log("props : " , props);dispatch(add(props))} ,
+    onDecrement:function(){  console.log("props : " , props);dispatch(minus(props))}
     };
 };
 
@@ -105,7 +79,7 @@ const rootEl = document.getElementById('example')
 
 ReactDOM.render(
   <Provider store={store}>
-            <Counter />
+            <Counter prop ={"test"}/>
   </Provider>,
   rootEl
 )
